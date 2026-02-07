@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🛸 MineGuard.ai: Autonomous Geospatial Forensics
 > 
 ## 📌 Overview
@@ -58,6 +58,6 @@ docker-compose up -d --build
 
 ---
 | *Orbital Intelligence for Global Sustainability*
-=======
+
 # Mineguard
->>>>>>> 31a6fdef232630fa7d6bea461e1326281b3c4cf7
+
