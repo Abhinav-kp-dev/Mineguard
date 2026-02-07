@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # 1. THE DATABASE
+  db:
+    image: postgis/postgis
+    # FIX: This line forces your Mac to use the Intel version via emulation
+    platform: linux/amd64
+    container_name: mineguard-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mining_secret
+      - POSTGRES_DB=mineguard
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  # 2. THE BACKEND API
+  backend:
+    build: ./backend
+    container_name: mineguard-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:mining_secret@db:5432/mineguard
+      - GOOGLE_CLOUD_PROJECT=minesector
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gee-key.json
+      
+      # --- CRITICAL CONFIGURATION ---
+      # For Localhost (Development):
+      - API_PUBLIC_URL=http://localhost:8000
+      
+      # For AWS / Cloud (Production):
+      # - API_PUBLIC_URL=http://13.61.145.193:8000
+      
+    volumes:
+      - ./backend/static:/app/static
+      - /home/abhin-krishna-m-p/.config/earthengine:/root/.config/earthengine:ro
+
+  # 3. THE FRONTEND DASHBOARD
+  frontend:
+    build: ./frontend
+    container_name: mineguard-ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
